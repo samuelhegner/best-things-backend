@@ -110,7 +110,7 @@ func categorySetKey(category string) string {
 }
 
 func NewMatchupManager() *matchupManager {
-	opt, err := redis.ParseURL(os.Getenv("REDIS-URL"))
+	opt, err := redis.ParseURL(os.Getenv("REDIS_URL"))
 	if err != nil {
 		panic(err)
 	}
