@@ -9,7 +9,7 @@ import (
 	"github.com/samuelhegner/best-things/types"
 )
 
-func incrementEntry(member string, category string, redis *redis.Client) {
+func IncrementEntry(member string, category string, redis *redis.Client) {
 	total, yearly, monthly, daily := getDynamicBoardNames(category)
 	redis.ZIncrBy(total, 1, member)
 	redis.ZIncrBy(yearly, 1, member)

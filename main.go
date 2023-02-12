@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/samuelhegner/best-things/matchupManager"
 )
@@ -19,17 +20,30 @@ func init() {
 
 func main() {
 	mm := matchupManager.NewMatchupManager()
-	cat := mm.GetCategories()
 
-	m, err := mm.GetMatchup(cat[0].Name)
+	r := gin.Default()
 
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println(m)
-	}
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
 
-	res, _ := mm.GetCategoryBoards(cat[0].Name)
+	r.GET("/categories", func(ctx *gin.Context) {
+		cat := mm.GetCategories()
+		ctx.JSON(200, cat)
+	})
 
-	fmt.Println(res)
+	r.GET("/matchup", func(ctx *gin.Context) {
+		fmt.Println("lil test")
+		fmt.Println(ctx.Query("category"))
+		fmt.Println("lil test 2")
+
+		//m, err := mm.GetMatchup()
+		ctx.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
+
+	r.Run() // listen and serve on 0.0.0.0:8080
 }

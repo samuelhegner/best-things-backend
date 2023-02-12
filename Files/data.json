@@ -2,96 +2,106 @@
     {
         "name": "Father Ted Crilly",
         "image": "placeholder",
-        "category": "Father Ted Priests"
+        "category": "father-ted-priests"
     },
     {
         "name": "Father Dougal McGuire",
         "image": "placeholder",
-        "category": "Father Ted Priests"
+        "category": "father-ted-priests"
     },
     {
         "name": "Father Jack Hackett",
         "image": "placeholder",
-        "category": "Father Ted Priests"
+        "category": "father-ted-priests"
     },
     {
         "name": "Bishop Brennan",
         "image": "placeholder",
-        "category": "Father Ted Priests"
+        "category": "father-ted-priests"
     },
     {
         "name": "Father Dick Byrne",
         "image": "placeholder",
-        "category": "Father Ted Priests"
+        "category": "father-ted-priests"
     },
     {
         "name": "Father Noel Furlong",
         "image": "placeholder",
-        "category": "Father Ted Priests"
+        "category": "father-ted-priests"
     },
     {
         "name": "Father Larry Duff",
         "image": "placeholder",
-        "category": "Father Ted Priests"
+        "category": "father-ted-priests"
     },
     {
         "name": "Father Paul Stone",
         "image": "placeholder",
-        "category": "Father Ted Priests"
+        "category": "father-ted-priests"
     },
     {
         "name": "Father Fintan Stack",
         "image": "placeholder",
-        "category": "Father Ted Priests"
+        "category": "father-ted-priests"
     },
     {
         "name": "Father Austin Purcell",
         "image": "placeholder",
-        "category": "Father Ted Priests"
+        "category": "father-ted-priests"
     },
     {
         "name": "Father \"Todd Unctious\"",
         "image": "placeholder",
-        "category": "Father Ted Priests"
+        "category": "father-ted-priests"
     },
     {
         "name": "Father Jim Johnson",
         "image": "placeholder",
-        "category": "Father Ted Priests"
+        "category": "father-ted-priests"
     },
     {
         "name": "Father Cyril MacDuff",
         "image": "placeholder",
-        "category": "Father Ted Priests"
+        "category": "father-ted-priests"
     },
     {
         "name": "Father Billy O'Dwyer",
         "image": "placeholder",
-        "category": "Father Ted Priests"
+        "category": "father-ted-priests"
     },
     {
         "name": "Father Liam Finnegan",
         "image": "placeholder",
-        "category": "Father Ted Priests"
+        "category": "father-ted-priests"
     },
     {
         "name": "Father Damien \"Damo\" Lennon",
         "image": "placeholder",
-        "category": "Father Ted Priests"
+        "category": "father-ted-priests"
     },
     {
         "name": "Father Joe Briefly",
         "image": "placeholder",
-        "category": "Father Ted Priests"
+        "category": "father-ted-priests"
     },
     {
         "name": "Father Fitzgerald",
         "image": "placeholder",
-        "category": "Father Ted Priests"
+        "category": "father-ted-priests"
     },
     {
         "name": "Father Shaft",
         "image": "placeholder",
-        "category": "Father Ted Priests"
+        "category": "father-ted-priests"
+    },
+    {
+        "name": "Father \"Frosty\" Frost",
+        "image": "placeholder",
+        "category": "father-ted-priests"
+    },
+    {
+        "name": "Father Barty Dunne",
+        "image": "placeholder",
+        "category": "father-ted-priests"
     }
 ]

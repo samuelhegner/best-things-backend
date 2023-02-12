@@ -177,3 +177,28 @@ func (m *matchupManager) hasCategory(name string) bool {
 
 	return false
 }
+
+func (m *matchupManager) SubmitMatchupResponse(guid string, winner string, category string) (bool, error) {
+	if !m.hasCategory(category) {
+		return false, fmt.Errorf("category not available")
+	}
+
+	isMember, err := m.client.SIsMember(guid, winner).Result()
+
+	if err != nil {
+		return false, err
+	}
+
+	if !isMember {
+		return false, fmt.Errorf("name not in the matchup options")
+	}
+
+	_, err = m.client.Del(guid).Result()
+
+	if err != nil {
+		return false, err
+	}
+
+	leaderboardManager.IncrementEntry(winner, category, m.client)
+	return true, nil
+}
