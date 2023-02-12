@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"time"
 
@@ -110,7 +111,13 @@ func categorySetKey(category string) string {
 }
 
 func NewMatchupManager() *matchupManager {
-	opt, err := redis.ParseURL(os.Getenv("REDIS_URL"))
+	redisUrl := os.Getenv("REDIS_URL")
+
+	if redisUrl == "" {
+		log.Fatal("Error loading .env file")
+	}
+
+	opt, err := redis.ParseURL(redisUrl)
 	if err != nil {
 		panic(err)
 	}

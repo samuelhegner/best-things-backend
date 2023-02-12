@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,12 +10,7 @@ import (
 )
 
 func init() {
-
-	err := godotenv.Load(".env")
-
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	godotenv.Load(".env")
 }
 
 func main() {
