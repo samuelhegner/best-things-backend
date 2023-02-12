@@ -1,7 +1,12 @@
 package types
 
 type BoardResult struct {
-	Results map[Card]int
+	Results []BoardEntry
+}
+
+type BoardEntry struct {
+	Member string
+	Score  int
 }
 
 type CategoryBoards struct {
@@ -29,4 +34,10 @@ type SheetData struct {
 	Name     string
 	Image    string
 	Category string
+}
+
+type MatchupSubmit struct {
+	Guid     string `json:"guid" binding:"required"`
+	Winner   string `json:"winner" binding:"required"`
+	Category string `json:"category" binding:"required"`
 }

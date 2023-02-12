@@ -1,6 +1,7 @@
 package leaderboardManager
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -24,24 +25,28 @@ func GetLeaderboards(category string, redis *redis.Client) types.CategoryBoards 
 	mr := getBoardResult(monthly, redis)
 	dr := getBoardResult(daily, redis)
 
-	return types.CategoryBoards{
+	ret := types.CategoryBoards{
 		Total: tr,
 		Year:  yr,
 		Month: mr,
 		Day:   dr,
 	}
+
+	fmt.Println(ret)
+
+	return ret
 }
 
 func getBoardResult(key string, redis *redis.Client) types.BoardResult {
 	tr, err := redis.ZRevRangeWithScores(key, 0, 5).Result()
-	r := types.BoardResult{}
+	r := types.BoardResult{Results: make([]types.BoardEntry, 0)}
 
 	if err != nil || len(tr) < 1 {
 		return r
 	}
 
 	for _, z := range tr {
-		r.Results[z.Member.(types.Card)] = int(z.Score)
+		r.Results = append(r.Results, types.BoardEntry{Member: z.Member.(string), Score: int(z.Score)})
 	}
 
 	return r

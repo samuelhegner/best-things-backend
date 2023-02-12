@@ -190,13 +190,13 @@ func (m *matchupManager) SubmitMatchupResponse(guid string, winner string, categ
 	}
 
 	if !isMember {
-		return false, fmt.Errorf("name not in the matchup options")
+		return false, fmt.Errorf("matchup doesn't exist or name not in the matchup options")
 	}
 
 	_, err = m.client.Del(guid).Result()
 
 	if err != nil {
-		return false, err
+		return false, fmt.Errorf("failed to del matchup entry: " + err.Error())
 	}
 
 	leaderboardManager.IncrementEntry(winner, category, m.client)
