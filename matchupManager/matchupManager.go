@@ -24,56 +24,6 @@ type matchupManager struct {
 const checksumKey string = "checksum"
 const matchupExpirationSeconds int64 = 60
 
-func (m *matchupManager) init() {
-	jsonFile, err := os.Open("./Files/data.json")
-
-	if err != nil {
-		return
-	}
-
-	byteValue, _ := io.ReadAll(jsonFile)
-	var entries []types.SheetData
-	json.Unmarshal(byteValue, &entries)
-
-	data := make(map[string][]types.Card)
-
-	for _, e := range entries {
-		data[e.Category] = append(data[e.Category], types.Card(e.Name))
-	}
-
-	categories := make([]types.Category, len(data))
-
-	i := 0
-
-	for k := range data {
-		categories[i] = types.Category{Name: k}
-		i++
-	}
-
-	m.categories = categories
-	m.initDB(data)
-}
-
-func (m *matchupManager) initDB(data map[string][]types.Card) {
-	checksum := dataToChecksum(data)
-
-	if !m.dbNeedsUpdate(checksum) {
-		return
-	}
-
-	fmt.Println("Checksum not at parity. Updating db...")
-
-	for _, c := range m.categories {
-		m.createMemberSet(c.Name, data[c.Name])
-	}
-
-	m.setDbChecksum(checksum)
-}
-
-func (m *matchupManager) setDbChecksum(checksum string) {
-	m.client.Set(checksumKey, checksum, 0)
-}
-
 func dataToChecksum(data map[string][]types.Card) string {
 	json, _ := json.Marshal(data)
 
@@ -81,29 +31,6 @@ func dataToChecksum(data map[string][]types.Card) string {
 	hash.Write(json)
 	sum := hex.EncodeToString(hash.Sum(nil))
 	return sum
-}
-
-func (m *matchupManager) dbNeedsUpdate(checksum string) bool {
-	res, err := m.client.Get(checksumKey).Result()
-
-	if err != nil {
-		return true
-	}
-
-	return res != checksum
-}
-
-func (m *matchupManager) createMemberSet(category string, members []types.Card) {
-	key := categorySetKey(category)
-
-	names := make([]string, len(members))
-
-	for i, m := range members {
-		names[i] = string(m)
-	}
-
-	m.client.Del(key)
-	m.client.SAdd(key, names)
 }
 
 func categorySetKey(category string) string {
@@ -114,7 +41,7 @@ func NewMatchupManager() *matchupManager {
 	redisUrl := os.Getenv("REDIS_URL")
 
 	if redisUrl == "" {
-		log.Fatal("Error loading .env file")
+		log.Fatal("Error loading REDIS_URL from env variables")
 	}
 
 	opt, err := redis.ParseURL(redisUrl)
@@ -132,8 +59,53 @@ func NewMatchupManager() *matchupManager {
 	return &mm
 }
 
+func (m *matchupManager) hasCategory(category string) bool {
+
+	for _, c := range m.categories {
+		if c.Name == category {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (m *matchupManager) GetCategories() []types.Category {
 	return m.categories
+}
+
+func (m *matchupManager) GetLeaderboards(category string) (types.CategoryBoards, error) {
+
+	if !m.hasCategory(category) {
+		return types.CategoryBoards{}, fmt.Errorf("category not available")
+	}
+
+	return leaderboardManager.GetLeaderboards(category, m.client), nil
+}
+
+func (m *matchupManager) SubmitMatchupResponse(guid string, winner string, category string) (bool, error) {
+	if !m.hasCategory(category) {
+		return false, fmt.Errorf("category not available")
+	}
+
+	isMember, err := m.client.SIsMember(guid, winner).Result()
+
+	if err != nil {
+		return false, err
+	}
+
+	if !isMember {
+		return false, fmt.Errorf("matchup doesn't exist or name not in the matchup options")
+	}
+
+	_, err = m.client.Del(guid).Result()
+
+	if err != nil {
+		return false, fmt.Errorf("failed to del matchup entry: " + err.Error())
+	}
+
+	leaderboardManager.IncrementEntry(winner, category, m.client)
+	return true, nil
 }
 
 func (m *matchupManager) GetMatchup(category string) (types.Matchup, error) {
@@ -165,47 +137,75 @@ func (m *matchupManager) GetMatchup(category string) (types.Matchup, error) {
 	return matchup, nil
 }
 
-func (m *matchupManager) GetCategoryBoards(category string) (types.CategoryBoards, error) {
+func (m *matchupManager) init() {
+	jsonFile, err := os.Open("./Files/data.json")
 
-	if !m.hasCategory(category) {
-		return types.CategoryBoards{}, fmt.Errorf("category not available")
+	if err != nil {
+		return
 	}
 
-	return leaderboardManager.GetLeaderboards(category, m.client), nil
+	byteValue, _ := io.ReadAll(jsonFile)
+	var entries []types.SheetData
+	json.Unmarshal(byteValue, &entries)
+
+	data := make(map[string][]types.Card)
+
+	for _, e := range entries {
+		data[e.Category] = append(data[e.Category], types.Card(e.Name))
+	}
+
+	categories := make([]types.Category, len(data))
+
+	i := 0
+
+	for k := range data {
+		categories[i] = types.Category{Name: k}
+		i++
+	}
+
+	m.categories = categories
+	m.initDB(data)
 }
 
-func (m *matchupManager) hasCategory(name string) bool {
+func (m *matchupManager) setDbChecksum(checksum string) {
+	m.client.Set(checksumKey, checksum, 0)
+}
+
+func (m *matchupManager) dbNeedsUpdate(checksum string) bool {
+	res, err := m.client.Get(checksumKey).Result()
+
+	if err != nil {
+		return true
+	}
+
+	return res != checksum
+}
+
+func (m *matchupManager) createMemberSet(category string, members []types.Card) {
+	key := categorySetKey(category)
+
+	names := make([]string, len(members))
+
+	for i, m := range members {
+		names[i] = string(m)
+	}
+
+	m.client.Del(key)
+	m.client.SAdd(key, names)
+}
+
+func (m *matchupManager) initDB(data map[string][]types.Card) {
+	checksum := dataToChecksum(data)
+
+	if !m.dbNeedsUpdate(checksum) {
+		return
+	}
+
+	fmt.Println("Checksum not at parity. Updating db...")
 
 	for _, c := range m.categories {
-		if c.Name == name {
-			return true
-		}
+		m.createMemberSet(c.Name, data[c.Name])
 	}
 
-	return false
-}
-
-func (m *matchupManager) SubmitMatchupResponse(guid string, winner string, category string) (bool, error) {
-	if !m.hasCategory(category) {
-		return false, fmt.Errorf("category not available")
-	}
-
-	isMember, err := m.client.SIsMember(guid, winner).Result()
-
-	if err != nil {
-		return false, err
-	}
-
-	if !isMember {
-		return false, fmt.Errorf("matchup doesn't exist or name not in the matchup options")
-	}
-
-	_, err = m.client.Del(guid).Result()
-
-	if err != nil {
-		return false, fmt.Errorf("failed to del matchup entry: " + err.Error())
-	}
-
-	leaderboardManager.IncrementEntry(winner, category, m.client)
-	return true, nil
+	m.setDbChecksum(checksum)
 }
