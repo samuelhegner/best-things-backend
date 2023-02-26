@@ -51,6 +51,8 @@ func main() {
 
 	mm := matchupManager.NewMatchupManager()
 
+	gin.SetMode(gin.ReleaseMode)
+
 	r := gin.Default()
 
 	r.GET("/categories", func(ctx *gin.Context) {

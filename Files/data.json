@@ -50,7 +50,7 @@
         "category": "father-ted-priests"
     },
     {
-        "name": "Father \"Todd Unctious\"",
+        "name": "Father Todd Unctious",
         "image": "placeholder",
         "category": "father-ted-priests"
     },
@@ -75,7 +75,7 @@
         "category": "father-ted-priests"
     },
     {
-        "name": "Father Damien \"Damo\" Lennon",
+        "name": "Father Damien Lennon",
         "image": "placeholder",
         "category": "father-ted-priests"
     },
@@ -95,12 +95,27 @@
         "category": "father-ted-priests"
     },
     {
-        "name": "Father \"Frosty\" Frost",
+        "name": "Father Frost",
         "image": "placeholder",
         "category": "father-ted-priests"
     },
     {
         "name": "Father Barty Dunne",
+        "image": "placeholder",
+        "category": "father-ted-priests"
+    },
+    {
+        "name": "Father Hernandes",
+        "image": "placeholder",
+        "category": "father-ted-priests"
+    },
+    {
+        "name": "Father Liam Deliverance",
+        "image": "placeholder",
+        "category": "father-ted-priests"
+    },
+    {
+        "name": "Father Kevin",
         "image": "placeholder",
         "category": "father-ted-priests"
     }
